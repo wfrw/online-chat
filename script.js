@@ -1,13 +1,32 @@
+let socket;
+
+function connectWebSocket() {
+  socket = new WebSocket('ws://localhost:8080');
+
+  socket.onopen = () => {
+    console.log('Connected to WebSocket server');
+  };
+
+  socket.onmessage = (event) => {
+    displayMessage(event.data, 'other');
+  };
+
+  socket.onclose = () => {
+    console.log('Disconnected from WebSocket server');
+  };
+
+  socket.onerror = (error) => {
+    console.error('WebSocket error:', error);
+  };
+}
+
 function sendMessage() {
   const inputBox = document.getElementById('chat-input');
   const message = inputBox.value.trim();
   if (message) {
     displayMessage(message, 'user');
+    socket.send(message);
     inputBox.value = '';
-    // Simulate a response from the "other person"
-    setTimeout(() => {
-      displayMessage("This is a simulated response.", 'bot');
-    }, 1000);
   }
 }
 
@@ -26,3 +45,6 @@ function checkEnter(event) {
     sendMessage();
   }
 }
+
+// Initialize WebSocket connection
+connectWebSocket();
